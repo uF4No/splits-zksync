@@ -1,7 +1,16 @@
-import { HardhatUserConfig } from 'hardhat/types'
+// import { HardhatUserConfig } from 'hardhat/types'
+import { HardhatUserConfig } from 'hardhat/config'
+
+// Imports ZKsync plugin
+import '@matterlabs/hardhat-zksync-deploy'
+import '@matterlabs/hardhat-zksync-solc'
+import '@matterlabs/hardhat-zksync-ethers'
+import '@matterlabs/hardhat-zksync-node'
+import '@matterlabs/hardhat-zksync-verify'
+
 import '@typechain/hardhat'
 import '@typechain/ethers-v5'
-import '@nomiclabs/hardhat-ethers'
+// import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-waffle'
 import '@nomiclabs/hardhat-solhint'
 import 'hardhat-deploy'
@@ -55,6 +64,23 @@ const config: HardhatUserConfig = {
     deployer: 0,
   },
   networks: {
+    zkSyncSepoliaTestnet: {
+      url: 'https://sepolia.era.zksync.dev',
+      // @ts-ignore
+      ethNetwork: 'sepolia',
+      // @ts-ignore
+      zksync: true,
+      // @ts-ignore
+      verifyURL:
+        'https://explorer.sepolia.era.zksync.dev/contract_verification',
+    },
+    inMemoryNode: {
+      url: 'http://127.0.0.1:8011',
+      // @ts-ignore
+      ethNetwork: 'localhost',
+      // @ts-ignore
+      zksync: true,
+    },
     mainnet: {
       url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts: process.env.DEPLOYER_PRIVATE_KEY
@@ -86,6 +112,8 @@ const config: HardhatUserConfig = {
         : 'remote',
     },
     hardhat: {
+      // @ts-ignore
+      zksync: true,
       forking: {
         url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
         blockNumber: 13852105,
