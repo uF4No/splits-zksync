@@ -13,6 +13,8 @@ enum ChainId {
   BSC = 56,
   xDai = 100,
   Polygon = 137,
+  ZKsyncTestnet = 300,
+  ZKsync = 324,
   Moonriver = 1285,
   Mumbai = 80001,
   Harmony = 1666600000,
@@ -34,6 +36,8 @@ const CHAIN_NAMES = {
   [ChainId.Harmony]: 'Harmony',
   [ChainId.Localhost]: 'Localhost',
   [ChainId.Hardhat]: 'Hardhat',
+  [ChainId.ZKsync]: 'ZKsync',
+  [ChainId.ZKsyncTestnet]: 'ZKsyncSepoliaTestnet',
 }
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -50,6 +54,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const splitMain = await deploy('SplitMain', {
     from: deployer,
     log: true,
+  })
+
+  await hre.run('verify:verify', {
+    address: splitMain.address,
+    constructorArguments: [],
   })
 
   const info = {

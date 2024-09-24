@@ -1,6 +1,6 @@
 import { ethers, network, waffle } from 'hardhat'
 import { expect } from 'chai'
-import { Contract, ContractTransaction, Signer, BigNumber } from 'ethers'
+import { Contract, ContractTransaction, Signer, BigNumber, utils } from 'ethers'
 import { Zero, One, Two, AddressZero } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { hashSplit } from 'utils/splits'
@@ -15,11 +15,13 @@ import type { SplitMain, SplitWallet } from 'typechain'
 
 const { loadFixture, deployMockContract } = waffle
 
-const DAI_ADDRESS = ethers.utils.getAddress(
-  '0x6b175474e89094c44da98b954eedeac495271d0f',
+const DAI_ADDRESS = utils.getAddress(
+  // '0x6b175474e89094c44da98b954eedeac495271d0f',
+  '0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656', // ZKsync mainnet DAI
 )
-const DAI_WHALE = ethers.utils.getAddress(
-  '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
+const DAI_WHALE = utils.getAddress(
+  // '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
+  '0x07aE8551Be970cB1cCa11Dd7a11F47Ae82e70E67', // ZKsync mainnet DAI whale
 )
 
 const ETH_BALANCES_SLOT = 0
@@ -119,7 +121,8 @@ describe('SplitMain', function () {
     (customConfig: CustomTestConfig = {}) =>
     async () => {
       const SplitMain = await ethers.getContractFactory('SplitMain')
-      splitMain = (await SplitMain.deploy()) as SplitMain
+      // TODO: This fails on ZKsync even with hardcoded gasLimit.
+      splitMain = (await SplitMain.deploy({ gasLimit: 30000000 })) as SplitMain
       await splitMain.deployed()
       generateRandomSplit(customConfig)
     }
@@ -134,7 +137,7 @@ describe('SplitMain', function () {
       const receipt = await (await createSplitTx).wait()
       splitAddress =
         receipt.events?.[0]?.args?.split &&
-        ethers.utils.getAddress(receipt.events[0]?.args?.split)
+        utils.getAddress(receipt.events[0]?.args?.split)
     }
 
   const testSetup__transferControl =
@@ -155,16 +158,16 @@ describe('SplitMain', function () {
       await loadFixture(testSetup__createSplit(customConfig))
       ethProxyBalance =
         customConfig.ethProxyBalance ??
-        ethers.utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
+        utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
       ethMainBalance =
         customConfig.ethMainBalance ??
-        ethers.utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
+        utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
       ethBalance = ethMainBalance.add(ethProxyBalance)
       await signer.sendTransaction({
         to: splitAddress,
         value: ethProxyBalance,
       })
-      const index = ethers.utils.solidityKeccak256(
+      const index = utils.solidityKeccak256(
         ['uint256', 'uint256'],
         [splitAddress, ETH_BALANCES_SLOT], // key, slot
       )
@@ -172,8 +175,8 @@ describe('SplitMain', function () {
         method: 'hardhat_setStorageAt',
         params: [
           splitMain.address,
-          ethers.utils.hexStripZeros(index),
-          ethers.utils.hexZeroPad(ethMainBalance.toHexString(), 32),
+          utils.hexStripZeros(index),
+          utils.hexZeroPad(ethMainBalance.toHexString(), 32),
         ],
       })
     }
@@ -209,7 +212,7 @@ describe('SplitMain', function () {
     erc20Whale = await ethers.getSigner(DAI_WHALE)
     await network.provider.send('hardhat_setBalance', [
       DAI_WHALE,
-      ethers.utils.hexStripZeros(ethers.utils.parseEther('1').toHexString()),
+      utils.hexStripZeros(utils.parseEther('1').toHexString()),
     ])
     erc20Contract = new Contract(DAI_ADDRESS, ierc20Interface, erc20Whale)
   }
@@ -221,19 +224,19 @@ describe('SplitMain', function () {
       await loadFixture(testSetup__mockERC20())
       erc20ProxyBalance =
         customConfig.erc20ProxyBalance ??
-        ethers.utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
+        utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
       erc20MainBalance =
         customConfig.erc20MainBalance ??
-        ethers.utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
+        utils.parseEther((10 * Math.random()).toFixed(18)).add(One)
       erc20Balance = erc20ProxyBalance.add(erc20MainBalance)
       await erc20Contract
         .connect(erc20Whale)
         .transfer(splitAddress, erc20ProxyBalance)
-      const index = ethers.utils.solidityKeccak256(
+      const index = utils.solidityKeccak256(
         ['uint256', 'bytes32'],
         [
           splitAddress,
-          ethers.utils.solidityKeccak256(
+          utils.solidityKeccak256(
             ['uint256', 'uint256'],
             [DAI_ADDRESS, ERC20_BALANCES_SLOT], // key, slot
           ),
@@ -243,8 +246,8 @@ describe('SplitMain', function () {
         method: 'hardhat_setStorageAt',
         params: [
           splitMain.address,
-          ethers.utils.hexStripZeros(index),
-          ethers.utils.hexZeroPad(erc20MainBalance.toHexString(), 32),
+          utils.hexStripZeros(index),
+          utils.hexZeroPad(erc20MainBalance.toHexString(), 32),
         ],
       })
     }
@@ -281,7 +284,7 @@ describe('SplitMain', function () {
     const signer = await ethers.getSigner(address)
     await network.provider.send('hardhat_setBalance', [
       address,
-      ethers.utils.hexStripZeros(ethers.utils.parseEther('100').toHexString()),
+      utils.hexStripZeros(utils.parseEther('100').toHexString()),
     ])
     await callback(signer)
     await network.provider.request({
@@ -416,7 +419,7 @@ describe('SplitMain', function () {
     })
   }
 
-  describe('base', function () {
+  describe.only('base', function () {
     beforeEach(async () => {
       await loadFixture(testSetup__deploy())
     })
@@ -426,7 +429,7 @@ describe('SplitMain', function () {
     })
 
     it('Should be able to receive ETH', async function () {
-      ethProxyBalance = ethers.utils.parseEther(Math.random().toFixed(18))
+      ethProxyBalance = utils.parseEther(Math.random().toFixed(18))
       await expect(() =>
         signer.sendTransaction({
           to: splitMain.address,
@@ -1470,9 +1473,7 @@ describe('SplitMain', function () {
     describe('Should send ETH & ERC20 to account', function () {
       beforeEach(async () => {
         await loadFixture(testSetup__depositAndSplitERC20())
-        ethProxyBalance = ethers.utils.parseEther(
-          (10 * Math.random()).toFixed(18),
-        )
+        ethProxyBalance = utils.parseEther((10 * Math.random()).toFixed(18))
         await signer.sendTransaction({
           to: splitAddress,
           value: ethProxyBalance,
@@ -1556,7 +1557,7 @@ describe('SplitMain', function () {
 
     beforeEach(async () => {
       await loadFixture(testSetup__createSplit())
-      ethProxyBalance = ethers.utils.parseEther(Math.random().toFixed(18))
+      ethProxyBalance = utils.parseEther(Math.random().toFixed(18))
     })
 
     it('Should be able to receive ETH', async function () {

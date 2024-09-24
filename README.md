@@ -2,6 +2,26 @@
 
 [![codecov](https://codecov.io/gh/0xSplits/splits-contracts/branch/main/graph/badge.svg?token=ERFQOFF0L7)](https://codecov.io/gh/0xSplits/splits-contracts)
 
+## ZKsync migration
+
+1. Update hardhat to `^2.22.1` and replace hardhat-etherscan with `hardhat-verify`
+1. Install the ZKsync plugins:
+1. Import the plugins in the config file:
+```ts
+// Imports ZKsync plugins
+import '@matterlabs/hardhat-zksync-deploy'
+import '@matterlabs/hardhat-zksync-solc'
+import '@matterlabs/hardhat-zksync-ethers'
+import '@matterlabs/hardhat-zksync-node'
+import '@matterlabs/hardhat-zksync-verify'
+```
+1. Replace import of `hardhat-etherscan` with `hardhat-verify`
+1. Remove `hardhat-deploy-ethers` and `nomiclabs/hardhat-ethers`
+3. Comment imports from `hardhat-ethers`
+4. Add Alchemy KEY for ZKsync
+5. Update DAI address and whale address in `/test/SplitMain.ts` for ZKsync.
+
+
 ## Run locally
 ```
 yarn hardhat node

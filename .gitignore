@@ -31,3 +31,5 @@ yarn-error.log*
 /artifacts
 /typechain
 /docs
+/cache-zk
+/artifacts-zk

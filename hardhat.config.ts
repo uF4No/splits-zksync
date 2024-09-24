@@ -1,12 +1,5 @@
-// import { HardhatUserConfig } from 'hardhat/types'
-import { HardhatUserConfig } from 'hardhat/config'
-
-// Imports ZKsync plugin
-import '@matterlabs/hardhat-zksync-deploy'
-import '@matterlabs/hardhat-zksync-solc'
-import '@matterlabs/hardhat-zksync-ethers'
-import '@matterlabs/hardhat-zksync-node'
-import '@matterlabs/hardhat-zksync-verify'
+import { HardhatUserConfig } from 'hardhat/types'
+// import { HardhatUserConfig } from 'hardhat/config'
 
 import '@typechain/hardhat'
 import '@typechain/ethers-v5'
@@ -18,9 +11,18 @@ import 'hardhat-deploy'
 import 'hardhat-gas-reporter'
 import 'solidity-coverage'
 import '@primitivefi/hardhat-dodoc'
-import '@nomiclabs/hardhat-etherscan'
+// Uninstalled and replaced with @nomiclabs/hardhat-verify
+// import '@nomiclabs/hardhat-etherscan'
+import '@nomicfoundation/hardhat-verify'
 
 import 'tsconfig-paths/register'
+
+// Imports ZKsync plugins
+import '@matterlabs/hardhat-zksync-deploy'
+import '@matterlabs/hardhat-zksync-solc'
+import '@matterlabs/hardhat-zksync-ethers'
+import '@matterlabs/hardhat-zksync-node'
+import '@matterlabs/hardhat-zksync-verify'
 
 // import tasks
 import 'tasks/reset'
@@ -73,6 +75,9 @@ const config: HardhatUserConfig = {
       // @ts-ignore
       verifyURL:
         'https://explorer.sepolia.era.zksync.dev/contract_verification',
+      accounts: process.env.DEPLOYER_PRIVATE_KEY
+        ? [`0x${process.env.DEPLOYER_PRIVATE_KEY}`]
+        : 'remote',
     },
     inMemoryNode: {
       url: 'http://127.0.0.1:8011',
@@ -80,6 +85,9 @@ const config: HardhatUserConfig = {
       ethNetwork: 'localhost',
       // @ts-ignore
       zksync: true,
+      accounts: [
+        '0x3d3cbc973389cb26f657686445bcc75662b415b656078503592ac8c1abb8810e',
+      ],
     },
     mainnet: {
       url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
@@ -115,8 +123,10 @@ const config: HardhatUserConfig = {
       // @ts-ignore
       zksync: true,
       forking: {
-        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
-        blockNumber: 13852105,
+        // url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`, // for ETH mainnet
+        // blockNumber: 13852105, // for ETH mainnet
+        url: `https://zksync-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`, // for ZKsync mainnet
+        blockNumber: 44906562,
       },
       chainId: 1337,
     },
