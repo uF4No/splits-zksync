@@ -17,9 +17,11 @@ import '@matterlabs/hardhat-zksync-verify'
 ```
 1. Replace import of `hardhat-etherscan` with `hardhat-verify`
 1. Remove `hardhat-deploy-ethers` and `nomiclabs/hardhat-ethers`
-3. Comment imports from `hardhat-ethers`
-4. Add Alchemy KEY for ZKsync
-5. Update DAI address and whale address in `/test/SplitMain.ts` for ZKsync.
+1. Update hardhat-deploy to `0.11.x`
+2. Comment imports from `hardhat-ethers`
+3. Add Alchemy KEY for ZKsync
+4. Update DAI address and whale address in `/test/SplitMain.ts` for ZKsync.
+5. Replace all `ethers.utils.xxx` in test file with `utils.xxx` by not using `ethers` imported from `hardhat`
 
 
 ## Run locally
