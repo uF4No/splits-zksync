@@ -2,6 +2,12 @@
 
 [![codecov](https://codecov.io/gh/0xSplits/splits-contracts/branch/main/graph/badge.svg?token=ERFQOFF0L7)](https://codecov.io/gh/0xSplits/splits-contracts)
 
+## Error running tests
+
+- Install dependencies
+- Run era-test-node on a separate terminal
+- Run tests pointing to era-test-node with `npx hardhat test --network inMemoryNode`
+
 ## ZKsync migration
 
 1. Update hardhat to `^2.22.1` and replace hardhat-etherscan with `hardhat-verify`
