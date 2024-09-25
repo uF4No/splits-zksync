@@ -123,10 +123,10 @@ const config: HardhatUserConfig = {
       // @ts-ignore
       zksync: true,
       forking: {
-        // url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`, // for ETH mainnet
-        // blockNumber: 13852105, // for ETH mainnet
-        url: `https://zksync-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`, // for ZKsync mainnet
-        blockNumber: 44906562,
+        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`, // for ETH mainnet
+        blockNumber: 13852105, // for ETH mainnet
+        // url: `https://zksync-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`, // for ZKsync mainnet
+        // blockNumber: 44906562,
       },
       chainId: 1337,
     },

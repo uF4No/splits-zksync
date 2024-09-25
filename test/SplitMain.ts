@@ -120,9 +120,9 @@ describe('SplitMain', function () {
   const testSetup__deploy =
     (customConfig: CustomTestConfig = {}) =>
     async () => {
-      const SplitMain = await ethers.getContractFactory('SplitMain')
+      const SplitMain = await hre.ethers.getContractFactory('SplitMain')
       // TODO: This fails on ZKsync even with hardcoded gasLimit.
-      splitMain = (await SplitMain.deploy({ gasLimit: 30000000 })) as SplitMain
+      splitMain = (await SplitMain.deploy({ gasLimit: 999999999 })) as SplitMain
       await splitMain.deployed()
       generateRandomSplit(customConfig)
     }
